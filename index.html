@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>El Nombre De La App_v 1.0.0_v 2.9.8_GPS</title>
+    <title>El Nombre De La App_v 1.0.0_v 2.9.9_GPS</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
@@ -238,7 +238,7 @@
     <div x-show="!sesionIniciada" x-transition.opacity class="fixed inset-0 z-[100] flex flex-col items-center justify-center p-6 backdrop-blur-md bg-black/90">
         <div class="bg-card p-8 rounded-[2rem] w-full max-w-sm text-center shadow-2xl border">
             <div class="text-yellow-500 text-6xl mb-4"><i class="fas fa-bus"></i><i class="fas fa-broadcast-tower text-3xl ml-2"></i></div>
-            <h2 class="text-xl font-black mb-1 uppercase tracking-wider text-primary">BusTalk_v 2.9.8_GPS</h2>
+            <h2 class="text-xl font-black mb-1 uppercase tracking-wider text-primary">BusTalk_v 2.9.9_GPS</h2>
             <p class="mb-4 text-xs text-sub font-bold">Introduce tu servicio (ej. L01) o selecciona ruta.</p>
             
             <input type="text" x-model="miBusInput" @input="procesarInputBus()" placeholder="Ej: L01" 
@@ -398,14 +398,14 @@
         </div>
     </div>
 
-    <!-- CABECERA COMPACTA UNIVERSAL (VISIBLE EN MODO VERTICAL Y HORIZONTAL) -->
+    <!-- CABECERA COMPACTA UNIVERSAL CON EMBLEMA GRAPHICO (⬡ MB medbasha) -->
     <header class="p-2.5 bg-panel flex justify-between items-center border-b z-10 shadow-sm flex-shrink-0">
         <div class="flex flex-col">
             <div class="flex items-center space-x-2">
                 <span class="bg-yellow-500 text-black font-black px-2 py-0.5 rounded-md text-sm" x-text="miBus"></span>
-                <h1 class="text-lg font-black tracking-tighter italic text-primary">Bus<span class="text-amber-600">Talk</span> <span class="text-[9px] bg-green-700 text-white px-1 py-0.5 rounded ml-1 not-italic font-mono">v2.9.8</span></h1>
+                <h1 class="text-lg font-black tracking-tighter italic text-primary">Bus<span class="text-amber-600">Talk</span> <span class="text-[9px] bg-green-700 text-white px-1 py-0.5 rounded ml-1 not-italic font-mono">v2.9.9</span></h1>
             </div>
-            <span class="text-[11px] font-black text-sky-600 mt-0.5 uppercase tracking-widest truncate max-w-[150px]" x-text="miLinea"></span>
+            <span class="text-[11px] font-black text-sky-600 mt-0.5 uppercase tracking-widest truncate max-w-[140px]" x-text="miLinea"></span>
         </div>
         <div class="flex items-center space-x-1.5">
             <!-- BOTÓN HYBRID: GPS AUTO / MANUAL -->
@@ -415,8 +415,14 @@
                 <span x-text="modoAutoGPS ? 'GPS AUTO' : 'MANUAL'"></span>
             </button>
 
-            <!-- medbasha -->
-            <span class="text-[9px] font-mono text-sub border px-1 py-0.5 rounded tracking-[0.15em] font-bold">medbasha</span>
+            <!-- MINI EMBLEMA GRÁFICO (medbasha) -->
+            <div class="flex items-center gap-1 border border-gray-700 px-1.5 py-0.5 rounded-md bg-card">
+                <svg width="12" height="12" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <polygon points="50,5 90,27.5 90,72.5 50,95 10,72.5 10,27.5" stroke="#facc15" stroke-width="8" fill="#121212" />
+                    <text x="50" y="65" font-family="Arial, sans-serif" font-weight="900" font-size="42" fill="#facc15" text-anchor="middle">MB</text>
+                </svg>
+                <span class="text-[9px] font-mono text-sub tracking-widest font-bold">medbasha</span>
+            </div>
             
             <button @click="rotarModoColor()" class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-base border shadow-sm transition-transform active:scale-90" 
                     :class="modoColor === 'noche' ? 'bg-gray-800 text-yellow-400 border-gray-600' : (modoColor === 'gris' ? 'bg-gray-200 text-gray-900 border-gray-400' : 'bg-amber-100 text-amber-800 border-amber-500')">
@@ -427,7 +433,7 @@
                 <span class="w-2.5 h-2.5 rounded-full" :class="conectado ? 'bg-green-500 animate-pulse' : 'bg-red-500'"></span>
             </div>
 
-            <!-- BOTÓN APAGAR RADIO FIX VERTICAL Y HORIZONTAL -->
+            <!-- BOTÓN APAGAR RADIO UNIVERSAL -->
             <button @click="cerrarTurno()" class="w-8 h-8 bg-red-600/20 active:bg-red-600 text-red-500 active:text-white rounded-full flex items-center justify-center border border-red-500/50 shadow-sm transition-colors">
                 <i class="fas fa-power-off text-sm"></i>
             </button>
@@ -1145,7 +1151,7 @@
                     this.actualizarMiEstadoBD();
                 },
 
-                // INTERCAMBIO Y SALIDA DESDE CALA GALDANA (VUELTA / NARANJA)
+                // CORRECCIÓN DEFINITIVA DE SELECCIÓN DE VUELTA DESDE CALA GALDANA
                 cambiarServicioGaldana(lineaDestino) {
                     this.registrarActividad();
                     if (lineaDestino === 'L51') {
@@ -1160,11 +1166,23 @@
                     }
                     
                     this.miUbicacion = "Galdana";
+                    this.enParada = true;
                     this.esSentidoIda = false; // VUELTA = NARANJA
-                    this.confirmarCierreResumen();
+                    
+                    this.mostrarModalResumen = false;
+                    this.segundosEnParadaActual = 0;
+                    this.ultimoAvisoParadaSegs = 0;
+                    this.acumuladoParadasTrayecto = 0;
+                    this.acumuladoRetrasoTráfico = 0;
+                    this.ultimoTiempoParadoCongelado = 0;
+                    this.inicioParadaTimestamp = Date.now();
+                    this.mostrarAvisoApagarRadio = false;
+
+                    if ("vibrate" in navigator) navigator.vibrate(50);
+                    this.actualizarMiEstadoBD();
                 },
 
-                // INTERCAMBIO Y SALIDA DESDE SANT TOMÀS (VUELTA / NARANJA)
+                // CORRECCIÓN DEFINITIVA DE SELECCIÓN DE VUELTA DESDE SANT TOMÀS
                 cambiarServicioTomas(lineaDestino) {
                     this.registrarActividad();
                     if (lineaDestino === 'L71') {
@@ -1176,8 +1194,20 @@
                     }
                     
                     this.miUbicacion = "S. Tomàs 1ª";
+                    this.enParada = true;
                     this.esSentidoIda = false; // VUELTA = NARANJA
-                    this.confirmarCierreResumen();
+                    
+                    this.mostrarModalResumen = false;
+                    this.segundosEnParadaActual = 0;
+                    this.ultimoAvisoParadaSegs = 0;
+                    this.acumuladoParadasTrayecto = 0;
+                    this.acumuladoRetrasoTráfico = 0;
+                    this.ultimoTiempoParadoCongelado = 0;
+                    this.inicioParadaTimestamp = Date.now();
+                    this.mostrarAvisoApagarRadio = false;
+
+                    if ("vibrate" in navigator) navigator.vibrate(50);
+                    this.actualizarMiEstadoBD();
                 },
 
                 async mantenerPantallaDespierta() {
